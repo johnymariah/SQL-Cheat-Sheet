@@ -1,0 +1,112 @@
+--reformating data
+select 
+	upper(department_name),initcap(department_name),lower(initcap(department_name))
+from data_sci.company_departments;
+
+-- to remove non-printing charactors/trim ex.spaces
+
+select rtrim(ltrim(' Kelly  ')) = 'Kelly';
+
+--concatenation
+select 
+	job_title || '-' || last_name 
+from
+	data_sci.employees;
+
+select 
+	job_title || '-' || null 
+from
+	data_sci.employees;
+	
+
+select 
+	concat(job_title,'-',last_name) 
+from
+	data_sci.employees;
+
+select 
+	concat(job_title,'-',NULL) 
+from
+	data_sci.employees;
+
+select 
+	concat_ws('-',job_title,last_name,email) 
+from
+	data_sci.employees;
+-- '-' is added between everything
+
+--SUBSTRING
+SELECT 'ASDDFASDFSFD' test_string;
+
+select 
+	substring('ASDDFASDFSFD', 1, 3) test_string;
+
+
+select job_title
+from data_sci.employees
+where job_title like '%assistant%';
+
+
+select job_title,job_title like '%assistant%' as is_assigstant
+from data_sci.employees;
+	
+--REGULAR EXPRESSIONs
+
+select job_title
+from data_sci.employees
+where job_title like 'vp%';
+
+select job_title
+from data_sci.employees
+where job_title like 'vp%'
+or job_title like 'web%';
+
+select job_title
+from data_sci.employees
+where job_title similar to '(vp%|web%)';
+
+--vp accounting or vp marketting
+select job_title
+from data_sci.employees
+where job_title similar to 'vp (a|m)%';
+
+
+--reformat numeric data
+
+select avg(salary)
+from data_sci.employees;
+-- trunck completely drops the values
+-- round controls the pricision
+select
+	trunc(avg(salary)),
+	trunc(avg(salary),4),
+	round(avg(salary)),
+	round(avg(salary),2),
+	ceil(avg(salary)),
+	floor(avg(salary))
+from data_sci.employees;
+
+
+--approximate matching -- fuzzy string match
+-- is an extension
+
+create extension if not exists fuzzystrmatch;
+
+--soundex - return a code for a text
+-- helps detect typo
+
+select 
+	soundex('postgres'),
+	soundex('postgresss'),
+	soundex('postgreswewss');
+
+select 
+	soundex('postgres'),
+	soundex('Kostgres'),
+	difference('postgres','Kostgres');
+
+
+select
+	levenshtein('postgres','kostgres');
+
+-- returns number of operations needed to be performed on first string to correct the secondstring
