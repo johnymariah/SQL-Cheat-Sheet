@@ -1,0 +1,48 @@
+select count(*) , min(salary),max(salary),avg(salary)
+from data_sci.employees
+where region_id ='2';
+
+
+select 
+	department_id,
+	sum(salary),
+	round(avg(salary),2),
+	round(var_pop(salary),2),
+	round(stddev_pop(salary),2)
+from data_sci.employees
+group by department_id;
+
+select 
+	last_name,
+	department_id,
+	salary
+from
+	data_sci.employees
+where 
+	last_name LIKE 'b%'
+and 
+	salary > 10000;
+
+
+select 
+	  e.last_name,c.region_name,c.country_name
+from 
+	data_sci.employees e 	
+join
+ 	data_sci.company_regions c
+on
+	e.region_id = c.id; 
+	
+
+select 
+	e.last_name,
+	e.email,
+	d.department_name
+from
+	data_sci.employees e
+join
+	data_sci.company_departments d
+on
+	e.department_id = d.id
+where
+	e.salary > 120000;
