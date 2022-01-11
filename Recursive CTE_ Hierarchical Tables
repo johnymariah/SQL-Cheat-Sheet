@@ -1,0 +1,32 @@
+
+
+drop table if exists data_sci.org_structure;
+create table data_sci.org_structure (
+    id integer,
+    department_name text,
+    parent_department_id integer);
+
+--Hierarchical Tables
+insert into data_sci.org_structure values
+  (1, 'CEO Office', null),
+  (2, 'VP Sales', 1),
+  (3, 'VP Operations', 1),
+  (4, 'Northeast Sales',2),
+  (5, 'Northwest Sales',2),
+  (6, 'Infrastructure Operations', 3),
+  (7, 'Management Operations', 3);
+
+
+
+with recursive report_structure(id,department_name,parent_department_id) as
+(select id,department_name,parent_department_id
+from data_sci.org_structure
+where id = 7
+union
+select os.id,os.department_name,os.parent_department_id
+from data_sci.org_structure os
+join report_structure rs
+on rs.parent_department_id = os.id)
+
+
+select * from report_structure;
