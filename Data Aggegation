@@ -1,0 +1,184 @@
+SELECT
+	c.department_name,count(*)
+FROM 
+	data_sci.Employees e
+JOIN
+	data_sci.company_departments c
+ON
+	e.department_id = c.id
+GROUP BY 
+	c.department_name
+ORDER BY
+	c.department_name;
+
+SELECT
+	c.department_name,count(*)
+FROM 
+	data_sci.Employees e
+JOIN
+	data_sci.company_departments c
+ON
+	e.department_id = c.id
+GROUP BY 
+	c.department_name
+HAVING
+	count(*) > 50
+ORDER BY
+	count(*) DESC
+LIMIT 3;
+
+--SUBQUERY in SELECT 
+select 
+	e1.last_name,
+	e1.salary,
+	d1.id,
+	(select
+	 	round(avg(e2.salary),2)
+	 from 
+	 	data_sci.employees e2
+	 where 
+	 	e1.department_id = e2.department_id)
+from 
+	data_sci.employees e1
+join 
+	data_sci.company_departments d1
+on
+	e1.department_id = d1.id;
+--e1 is the outer employee table
+
+
+select 
+	round(avg(salary),2)
+from
+	data_sci.employees;
+
+--SUBQUERY in FROM 
+
+select 
+	round(avg(salary),2)
+from
+(select * from data_sci.employees where salary>100000) e2;
+
+--reference is a must here -- only befit is redablility when there is a bigger logic
+
+--this is the same as below
+
+select 
+	round(avg(salary),2)
+from
+     data_sci.employees
+where salary>100000;
+
+
+-- subquery in WHERE clause
+
+select d.department_name,d.id,e.last_name
+from data_sci.employees e
+join data_sci.company_departments d
+on e.department_id = d.id
+where e.salary = (
+select max(e.salary)
+from data_sci.employees e
+);
+
+select e1.department_id
+from data_sci.employees e1
+where 
+(select max(e2.salary) from data_sci.employees e2) = e1.salary; 
+
+
+--ROLLUP - data for reports
+
+
+select r.country_name,r.region_name, count(*)
+from 
+	data_sci.employees e
+join
+	data_sci.company_regions r
+on 
+	e.region_id = r.id
+group by r.country_name,r.region_name;
+
+
+select r.country_name,r.region_name, count(*)
+from 
+	data_sci.employees e
+join
+	data_sci.company_regions r
+on 
+	e.region_id = r.id
+group by 
+	rollup(r.country_name,r.region_name)
+order by 
+	r.country_name,r.region_name;
+
+
+
+
+select r.country_name,r.region_name, count(*)
+from 
+	data_sci.employees e
+join
+	data_sci.company_regions r
+on 
+	e.region_id = r.id
+group by 
+	cube(r.country_name,r.region_name)
+order by 
+	r.country_name,r.region_name;
+
+
+--CUBE
+
+select 
+	r.country_name,
+	r.region_name, 
+	d.department_name,
+	count(*)
+from 
+	data_sci.employees e
+join
+	data_sci.company_regions r
+on 
+	e.region_id = r.id
+join
+	data_sci.company_departments d
+on
+	e.department_id = d.id
+group by 
+	cube(r.country_name,
+	r.region_name, 
+	d.department_name)
+order by
+	r.country_name,
+	r.region_name, 
+	d.department_name;
+
+
+
+--TOP N
+
+select *
+from data_sci.employees
+order by salary desc
+limit 10;
+
+select *
+from data_sci.employees
+order by salary desc
+fetch first 10 rows only;
+
+
+--samples
+
+select department_id,sum(e.salary)
+from 
+	data_sci.employees e
+join
+	data_sci.company_departments d
+on
+	e.department_id = d.id
+group by e.department_id
+having sum(e.salary) > 5000000
+order by sum(e.salary)  desc;
+
