@@ -1,0 +1,133 @@
+select 
+	department_id,
+	salary,
+	last_name,
+	first_value(salary) over (partition by department_id order by salary asc) -- first value in that group 
+from data_sci.employees;
+
+--NTH_VALUE and NTILE
+
+--average and windowing
+--compare inditivdual item with averge of the group
+select 
+	department_id,
+	salary,
+	round(avg(salary) over (partition by department_id),2) -- round can be applied only to entire select
+from 
+	data_sci.employees;
+
+--ntitle - diving into groups
+select
+	department_id,
+	salary,
+	ntile(4) over(partition by department_id order by salary desc) as quartile
+from
+	data_sci.employees;
+
+--to find value a specfic value in the result
+--example 2nd highest in every department
+select
+	department_id,
+	salary,
+	nth_value(salary,2) over(partition by department_id order by salary desc) as secondhighest
+from
+	data_sci.employees;
+	
+--RANK
+
+--assigning rank to the results
+select 
+	department_id,
+	last_name,
+	salary,
+	rank() over (partition by department_id order by salary desc)
+from
+	data_sci.employees;
+--here it is ranked within the de[artment due to partition by
+
+
+--LEAD
+--looking one row ahead
+
+select 
+	department_id,
+	last_name,
+	salary,
+	lead(salary) over (partition by department_id order by salary desc)
+from
+	data_sci.employees;
+	
+--looking over by 2
+select 
+	department_id,
+	last_name,
+	salary,
+	lead(salary,2) over (partition by department_id order by salary desc)
+from
+	data_sci.employees;
+
+
+--LAG
+--looking back rows
+
+select 
+	department_id,
+	last_name,
+	salary,
+	lag(salary) over (partition by department_id order by salary desc)
+from
+	data_sci.employees;
+
+--width_bucket
+--get relatively top say 1% in a group
+
+select 
+	department_id,
+	last_name,
+	salary,
+	width_bucket(salary,0,150000,10)
+	--range of salaries , bucket size
+	--decile calculation
+from
+	data_sci.employees;
+
+--CUME_DIST
+--cummulative distribution
+-- 0 to 1 , to get cummulative percentage multiply by 100
+select 
+	department_id,
+	last_name,
+	salary,
+	cume_dist() over(order by salary desc)
+from
+	data_sci.employees;
+
+select 
+	department_id,
+	last_name,
+	salary,
+	round(cume_dist() over(order by salary desc)) * 100 as Cummulative_percentage
+from
+	data_sci.employees;
+
+--covert double precison to numeric as round does not supprt double precision format
+-- :: is used in postgresql for casting
+select 
+	department_id,
+	last_name,
+	salary,
+	round((cume_dist() over(order by salary desc) * 100)::numeric,2) as Cummulative_percentage
+from
+	data_sci.employees;
+	
+
+--sample
+
+select 
+	department_id,
+	last_name,
+	salary,
+	sum(salary) over (partition by department_id) as sum_salaries
+from
+	data_sci.employees;
+	
