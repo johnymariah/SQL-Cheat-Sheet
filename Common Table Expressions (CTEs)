@@ -1,0 +1,27 @@
+--auxillary statements used in larger queries
+--Create temp tables used with a query
+--to simplify complex queries
+-- can work with reccursive data structure
+-- done using WITH
+
+
+--example,display regions having total salary greater than the average salary across all regions
+
+with
+region_salaries as
+(select region_id,sum(salary) as sum_region_salary
+from data_sci.employees
+group by region_id),
+top_region_salaries as
+(select region_id 
+from region_salaries
+where sum_region_salary > (select sum(sum_region_salary)/7 from region_salaries))
+
+
+select 
+	*
+from 
+	region_salaries
+where 
+	region_id in (select region_id from top_region_salaries)
+
